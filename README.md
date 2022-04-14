@@ -17,7 +17,7 @@ In this example, the JWT token subject claim has to match an IBM i user profile,
 
 Please refer to this excellent [github repo](https://github.com/cicsdev/cics-java-liberty-tai-jwt) (IBM Z Lab Services Team , Montpellier France) for more information.
 
-### Building a TAI class (jar) with Maven
+## Building a TAI class (jar) with Maven
 Install maven on your system (yum install), git clone this repo and run:
 -  `mvn clean package`
 
@@ -26,7 +26,7 @@ Please adjust the pom.xml dependency file based on the IWS / WAS Liberty version
 
 ![IWS TAI Maven build ](./images/mvn-package.jpg)
  
-### Using a TAI Class with Liberty / IWS
+## Using a TAI Class with Liberty / IWS
 
 ![IWS TAI using class ](./images/iws-security-tai.jpg)
 
