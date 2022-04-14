@@ -28,16 +28,22 @@ Please adjust the pom.xml dependency file based on the IWS / WAS Liberty version
  
 ## Using a TAI Class with Liberty / IWS
 
+1. Add the TAI class in IWS Configuration as shown below:
+Adapt the path according to your setup:
 ![IWS TAI using class ](./images/iws-security-tai.jpg)
 
-Note: As is, the SimpleTAI class instanciates a JWTConsumer that requires the jwt-1.0 feature in Liberty: 
-
+2. As is, the SimpleTAI class instanciates a JWTConsumer that requires the jwt-1.0 feature in Liberty: 
+Add the jwt feature: 
 `vim /www/wservice/wlp/usr/servers/wservice/server.xml`
 (please adapt the server.xml path accordingly)
-1. Add the jwt feature: 
-![IWS TAI using class ](./images/iws-security-liberty-jwt-feature.jpg)
+```xml
+  <featureManager onError="WARN">
+   ...
+     <feature>jwt-1.0</feature>
+  </featureManager>
+```
 
-2. Add the following jwtConsumer line:
+3. Add the following jwtConsumer line:
 ```xml
   <jwtConsumer audiences="acmeair1" id="myJWTConsumer" issuer="myibmi" trustStoreRef="KeyStoreByWebAdmin" trustedAlias="bendemo2022"/>
 ```
@@ -45,7 +51,7 @@ Not that the JWT Consumer needs a keystore, ensure that your jwtConsumer is poin
 ```xml
  <keyStore id="KeyStoreByWebAdmin" location="/QIBM/USERDATA/ICSS/CERT/Server/DEFAULT.KDB" password="{xor}MzoyPjI6LTA=" provider="IBMi5OSJSSEProvider" type="IBMi5OSKeyStore"/>
  ```
-3. Edit, save **server.xml** and restart your IWS server.
+4. Edit, save **server.xml** and restart your IWS server.
 
 Note: The jwtConsumer tag specifies which public certificate to use (trustedAlias) to validate the JWT signature. Only the public certificate is required, no need to have the private key in the keyStore. The private key is only necessary for building a JWT token by a jwtBuilder, any API Management component or Identity server).
 
@@ -119,8 +125,8 @@ Date: Tue, 12 Apr 2022 12:38:29 GMT
 [4/12/22 14:39:35:995 CEST] 000000b0 SystemErr R [JWTTAI] CWWKS6031E: The JSON Web Token (JWT) consumer [myJWTConsumer] cannot process the token string. CWWKS6025E: The JSON Web Token (JWT) is not valid because its expiration ('exp') claim is either missing or the token expired. The expiration claim is [2022-04-12T14:28:53+0200]. The current time minus the clock skew is [2022-04-12T14:34:35+0200]. The configured clock skew is [300] seconds. 
 ```
 
-### Valid Bearer token, but identity not granted for this Web Service (roles mapping): HTTP 403 Forbidden
-(user in profile registry, can Basic auth other services, but not in api_usr role configured in IWS) 
+### Valid Bearer token, but identity not granted for this Service (roles mapping): HTTP 403 Forbidden
+- User in profile registry, can Basic auth other services, but not in api_usr role configured in IWS. 
 ```bash
 curl -X GET -k -H 'Authorization: Bearer eyJraWQiOiI0M19ZWGxrdkpPQTBmQ1Y3ZE9tOC1jSGJpQ3FJQ3pZRTQyN0RYeGR2MHNJIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXVkIjoiYWNtZWFpcjEiLCJzdWIiOiJjbGl1c3IiLCJ1cG4iOiJjbGl1c3IiLCJyZWFsbSI6ImRlZmF1bHRSZWFsbSIsImlzcyI6Im15aWJtaSIsImV4cCI6MTY0OTc4MDc2MSwiaWF0IjoxNjQ5NzczNTYxfQ.dsP6x-u8BXtdKqXsZXIq0alk6C3whOnyBvsxaBNfy_7bSuLjH90S4J0Crn5p0Qb4lWuXPA3TE2WPvkx74JP4_iLLczfLoWDYSqttxdoZT4-QL8ONwSvK38oNldO0c_HiMUVxVx_bJrn7mTYNehsGHKmxp24FXVNrGXrxbvj0HS_oOORAMSYDa6P7al4rtdvdl_jtcVDPOTblJSZRv-wiv4lKNx49crpEGQGnHlmq99fJa8wXGv2zt_xLgfU6jGJY4RI3H5U4O4btZtm4PAtwyfcqJQGdgp5WNp4Q-4I5YXhQ5VvIk6lxQQ3VALdDIlgatyrcwEiqTQvZijX_Y-YsYw' -i 'https://10.7.19.71:10443/web/services/GetUserInfo/uid0@email.com'
 ```
