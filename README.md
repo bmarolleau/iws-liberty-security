@@ -1,10 +1,12 @@
 # iws-tai-security
 ## Secure Web Services: IWS (Liberty) & Trusted Application Interceptor (TAI)
-Link to the full presentation "[IWS, TAI, Ngninx](https://ibm.box.com/)" 
+Link to the full presentation "[IWS, TAI, Ngninx](https://ibm.box.com/s/v2na4axu5hf48xvsy3jn6jrfd4bem1sv)" 
 
 This sample Java class provides the following functions:
 - JWT validation based on the JwtConsumer API (Liberty JWT feature) - the JWT signature will be checked, and the claims (exp, iss, aud) will be validated against the expected values;
 - Assign the identity by retrieving the subject claim;
+
+![IWS architecture overview ](./images/iws-ArchOverview-TAI.jpg)
 
 ### How it works
 
