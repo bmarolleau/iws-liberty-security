@@ -30,6 +30,108 @@ Please adjust the pom.xml dependency file based on the IWS / WAS Liberty version
 
 ![IWS TAI using class ](./images/iws-security-tai.jpg)
 
-### Tests - using Liberty JWTBuilder
+Note: As is, the SimpleTAI class instanciates a JWTConsumer that requires the jwt-1.0 feature in Liberty: 
 
-![IWS TAI Maven jwtbuilder ](./images/iws-security-jwtbuilder-jwtconsumer.jpg)
+`vim /www/wservice/wlp/usr/servers/wservice/server.xml`
+(please adapt the server.xml path accordingly)
+1. Add the jwt feature: 
+![IWS TAI using class ](./images/iws-security-liberty-jwt-feature.jpg)
+
+2. Add the following jwtConsumer line:
+```xml
+  <jwtConsumer audiences="acmeair1" id="myJWTConsumer" issuer="myibmi" trustStoreRef="KeyStoreByWebAdmin" trustedAlias="bendemo2022"/>
+```
+Not that the JWT Consumer needs a keystore, ensure that your jwtConsumer is pointing to an existing keystore (here: KeyStoreByWebAdmin) and certificate (here:bendemo2022), as in the example below (server.xml extract).
+```xml
+ <keyStore id="KeyStoreByWebAdmin" location="/QIBM/USERDATA/ICSS/CERT/Server/DEFAULT.KDB" password="{xor}MzoyPjI6LTA=" provider="IBMi5OSJSSEProvider" type="IBMi5OSKeyStore"/>
+ ```
+3. Edit, save **server.xml** and restart your IWS server.
+
+Note: The jwtConsumer tag specifies which public certificate to use (trustedAlias) to validate the JWT signature. Only the public certificate is required, no need to have the private key in the keyStore. The private key is only necessary for building a JWT token by a jwtBuilder, any API Management component or Identity server).
+
+## Tests - using Liberty JWTBuilder
+
+### Install a JWT Builder with Liberty
+
+If you don't have a JWT generator, you can use the Liberty server to do it for you.
+Simply add the following jwtBuilder tag in the server.xml configuration file:
+
+`vim /www/wservice/wlp/usr/servers/wservice/server.xml`
+
+```xml
+  <jwtBuilder audiences="acmeair1" id="myJWTBuilder" issuer="myibmi" keyAlias="bendemo2022" keyStoreRef="KeyStoreByWebAdmin"/>
+```
+![IWS TAI jwtbuilder ](./images/iws-security-jwtbuilder-jwtconsumer.jpg)
+
+- Note that here, the jwt builder that issues the JWT token use the same keystore than the TAI jwtConsumer. 
+- The jwtBuilder and Consumer tags specifies the values that are expected for different claims; update the audiences and issuer values to match the JWT generator configuration. 
+
+### Use jwtBuilder to generate a JWT Token for a user
+
+The JWT feature exposes JWT builders with a REST API. A token can be retrieved by sending the HTTPS request: ` GET https://<hostname>:<httpsPort>/jwt/ibm/api/myJWTBuilder/token ` 
+where myJWTBuilder is the id used by the configuration, hostname and httpsPort are the hostname and port of your IWS Server.
+1. Use a Web Browser or curl to generate a token. This JWT Token is issued for the authenticated (HTTP Basic) user (Subject claim).
+![IWS TAI jwtbuilder test ](./images/jwtbuilder-browser.png)
+
+2. Check the generated token : https://jwt.io/
+
+![IWS TAI jwt.io test ](./images/jwt.io.png)
+
+## Testing IWS + TAI with jwt tokens
+- public/private keys (cert) in the identity server (can be IBM i / IWS, as in the example, but can also be a third party tier like APIm or any trusted issuer)
+- public key on IWS in the IFS, and used by jwtConsumer to validate and extract identity.
+
+### No credentials: 401 Unauthorized
+```bash
+curl -X GET -k -i 'https://10.7.19.71:10443/web/services/GetUserInfo/uid0@email.com' 
+```
+```console
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Basic realm="defaultRealm"
+Content-Language: en-US
+Content-Length: 0
+Date: Tue, 12 Apr 2022 12:28:00 GMT
+```
+
+
+### Valid Bearer jwt token: HTTP 200 OK 
+- Request is intercepted by TAI, valid token, valid subject, granted in the registry.
+```bash
+curl -X GET -k -H 'Authorization: Bearer eyJraWQiOiI0M19ZWGxrdkpPQTBmQ1Y3ZE9tOC1jSGJpQ3FJQ3pZRTQyN0RYeGR2MHNJIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXVkIjoiYWNtZWFpciIsInN1YiI6ImFjbWVhaXIiLCJ1cG4iOiJhY21lYWlyIiwicmVhbG0iOiJkZWZhdWx0UmVhbG0iLCJpc3MiOiJteWlibWkiLCJleHAiOjE2NDk3NjY1MzMsImlhdCI6MTY0OTc1OTMzM30.wchCdnyJHriyCCvTQe4oTmAFkqcpHj72FjtakbAVMAD_Kj6x1ErTOZ7x0gpjfx9Wqi1WyQLEo7SsW3lLdICWzTF5-uQfe5U_ArdmaDEiteQu-mhvc0MN8lbkEBAVkvZ6lqlnzhPetVZItXzqxNPlzc63DLUrLtXRf2jm2BPAOUz2mn3VVuD-k04C8QPoniUMpHq1Vn674EX4oiGC_6kOgeaXnr0NEmYbEmanWrCSFIUVcmzTsQhJTBICeNrNKd8-4LBx5wNs7GQ8qpciCFZUKjbBcsUVJK3l341n-HAmOq1r94os4LuL0BAzKp9DPCJfXMP0aj7LR_iERiPr2CQJJg' -i 'https://10.7.19.71:10443/web/services/GetUserInfo/uid0@email.com'
+```
+```json
+{"userInfo":{"username":"uid0@email.com","status":"password","total_miles":1025440,"miles_ytd":0,"phoneNumber":"919-123-4567","phoneNumberType":"BUSINESS","address":{"streetAddress1":"156 Main St. RPG!!","streetAddress2":"address-na","city":"Montpellier","stateProvince":"27617","country":"USA","postalCode":"27648"}}}
+```
+
+### Invalid/corrupted Bearer token : HTTP 401 Unauthorized
+
+```console
+[4/12/22 14:36:58:201 CEST] 000000b9 SystemErr R [JWTTAI] CWWKS6031E: The JSON Web Token (JWT) consumer [myJWTConsumer] cannot process the token string. CWWKS6022E: The issuer [idg] of the provided JSON web token (JWT) is not listed as a trusted issuer in the [myJWTConsumer] JWT configuration. The trusted issuers are [myibmi]. 
+HTTP/1.1 401 Unauthorized
+Content-Language: en-US
+Content-Length: 0
+Date: Tue, 12 Apr 2022 12:38:29 GMT
+```
+
+### Expired Bearer token : HTTP 401 Unauthorized
+
+```console
+[4/12/22 14:39:35:995 CEST] 000000b0 SystemErr R [JWTTAI] CWWKS6031E: The JSON Web Token (JWT) consumer [myJWTConsumer] cannot process the token string. CWWKS6025E: The JSON Web Token (JWT) is not valid because its expiration ('exp') claim is either missing or the token expired. The expiration claim is [2022-04-12T14:28:53+0200]. The current time minus the clock skew is [2022-04-12T14:34:35+0200]. The configured clock skew is [300] seconds. 
+```
+
+### Valid Bearer token, but identity not granted for this Web Service (roles mapping): HTTP 403 Forbidden
+(user in profile registry, can Basic auth other services, but not in api_usr role configured in IWS) 
+```bash
+curl -X GET -k -H 'Authorization: Bearer eyJraWQiOiI0M19ZWGxrdkpPQTBmQ1Y3ZE9tOC1jSGJpQ3FJQ3pZRTQyN0RYeGR2MHNJIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXVkIjoiYWNtZWFpcjEiLCJzdWIiOiJjbGl1c3IiLCJ1cG4iOiJjbGl1c3IiLCJyZWFsbSI6ImRlZmF1bHRSZWFsbSIsImlzcyI6Im15aWJtaSIsImV4cCI6MTY0OTc4MDc2MSwiaWF0IjoxNjQ5NzczNTYxfQ.dsP6x-u8BXtdKqXsZXIq0alk6C3whOnyBvsxaBNfy_7bSuLjH90S4J0Crn5p0Qb4lWuXPA3TE2WPvkx74JP4_iLLczfLoWDYSqttxdoZT4-QL8ONwSvK38oNldO0c_HiMUVxVx_bJrn7mTYNehsGHKmxp24FXVNrGXrxbvj0HS_oOORAMSYDa6P7al4rtdvdl_jtcVDPOTblJSZRv-wiv4lKNx49crpEGQGnHlmq99fJa8wXGv2zt_xLgfU6jGJY4RI3H5U4O4btZtm4PAtwyfcqJQGdgp5WNp4Q-4I5YXhQ5VvIk6lxQQ3VALdDIlgatyrcwEiqTQvZijX_Y-YsYw' -i 'https://10.7.19.71:10443/web/services/GetUserInfo/uid0@email.com'
+```
+```console
+HTTP/1.1 403 Forbidden
+Content-Type: text/html;charset=ISO-8859-1
+$WSEP: 
+Content-Language: en-US
+Transfer-Encoding: chunked
+Connection: Close
+Date: Tue, 12 Apr 2022 14:28:04 GMT
+
+Error 403: AuthorizationFailed
+```
