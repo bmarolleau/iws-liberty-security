@@ -43,7 +43,7 @@ Add the jwt feature:
   </featureManager>
 ```
 
-3. Add the following jwtConsumer line:
+3. **Specific to this example with JWT:** Add the following jwtConsumer line:
 ```xml
   <jwtConsumer audiences="acmeair1" id="myJWTConsumer" issuer="myibmi" trustStoreRef="KeyStoreByWebAdmin" trustedAlias="bendemo2022"/>
 ```
@@ -55,6 +55,15 @@ Not that the JWT Consumer needs a keystore, ensure that your jwtConsumer is poin
 
 Note: The jwtConsumer tag specifies which public certificate to use (trustedAlias) to validate the JWT signature. Only the public certificate is required, no need to have the private key in the keyStore. The private key is only necessary for building a JWT token by a jwtBuilder, any API Management component or Identity server).
 
+5. Configure IWS **User Registry**
+
+The User Registry will be used by TAI , **negotiateValidateandEstablishTrust** method.
+In this example, IBM i user (profile) registry, with roles granting access to a particular web service:
+![IWS TAI registry security ](./images/iws-security-registry.jpg)
+
+6. Web Service level setting:
+![IWS TAI ws security ](./images/iws-security-service-properties.png)
+ 
 ## Tests - using Liberty JWTBuilder
 
 ### Install a JWT Builder with Liberty
