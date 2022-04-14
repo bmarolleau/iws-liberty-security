@@ -1,7 +1,8 @@
-# Secure Web Services with IWS (WAS Liberty) and Trusted Application Interceptor (TAI)
+# iws-tai-security
+## Secure Web Services with IWS (WAS Liberty) and Trusted Application Interceptor (TAI)
 Link to an introduction presentation  : <link>
-## Building a TAI class (jar) with Maven
-## Building a TAI class manually 
-## Using a TAI Class with Liberty / IWS
-## Tests
+### Building a TAI class (jar) with Maven
+### Building a TAI class manually 
+### Using a TAI Class with Liberty / IWS
+### Tests
 
