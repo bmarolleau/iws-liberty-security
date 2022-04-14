@@ -1,5 +1,5 @@
 # iws-tai-security
-## Secure Web Services: IWS (Liberty) & Trusted Application Interceptor (TAI)
+## Secure Web Services: IWS (Liberty) & Trust Authentication Interceptor (TAI)
 Link to the full presentation "[IWS, TAI, Ngninx](https://ibm.box.com/s/v2na4axu5hf48xvsy3jn6jrfd4bem1sv)" 
 
 This sample Java class provides the following functions:
