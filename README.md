@@ -62,6 +62,7 @@ In this example, IBM i user (profile) registry, with roles granting access to a 
 ![IWS TAI registry security ](./images/iws-security-registry.jpg)
 
 6. Web Service level setting:
+
 ![IWS TAI ws security ](./images/iws-security-service-properties.png)
  
 ## Tests - using Liberty JWTBuilder
