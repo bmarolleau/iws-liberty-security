@@ -10,7 +10,7 @@ This sample Java class provides the following functions:
 
 ### How it works
 
-When the Liberty server is launched, it reads the jwtConsumer configuration named myJWTConsumer and makes it available. The TAI class is then also be initialized, but in this sample nothing is done during the TAI initialization process.
+When the Liberty server is launched, it reads the jwtConsumer configuration named myJWTConsumer and makes it available. The TAI class is then initialized, but in this sample nothing is done during the TAI initialization process.
 - **isTargetInterceptor** method: The TAI Class will only intercept HTTPS requests that contain a JWT in the Authorization Bearer header. isTargetInterceptor method returns 'true', negotiateValidateandEstablishTrust is then invoked.
 - **negotiateValidateandEstablishTrust**  method:  will create an instance of a JwtConsumer based on the myJWTConsumer configuration to validate and parse JWTs. Once selected to handle the authentication, it will validate the JWT signature with the trustedAlias certificate taken from myJWTConsumer and will parse the JWT to retrieve the claims. The JwtConsumer only verifies the issuer, audience and expiry claims; to validate the other claims some lines of code need to be written in the TAI negotiateValidateandEstablishTrust method. 
 - **Result:** If the JWT passes all the checks, the subject claim will be defined as the Principal identity and the request will be processed. Otherwise the request will be rejected.
@@ -81,7 +81,7 @@ Simply add the following jwtBuilder tag in the server.xml configuration file:
 ```
 ![IWS TAI jwtbuilder ](./images/iws-security-jwtbuilder-jwtconsumer.jpg)
 
-- Note that here, the jwt builder that issues the JWT token use the same keystore than the TAI jwtConsumer. 
+- Note that here, the jwt builder that issues the JWT token uses the same keystore than the TAI jwtConsumer. 
 - The jwtBuilder and Consumer tags specifies the values that are expected for different claims; update the audiences and issuer values to match the JWT generator configuration. 
 
 ### Use jwtBuilder to generate a JWT Token for a user
