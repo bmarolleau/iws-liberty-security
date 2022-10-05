@@ -181,7 +181,7 @@ java -jar openapi-generator-cli-6.2.0.jar generate -i swagger.json  -g jmeter
 <br/><br/>
 ![jmeter test](./images/iws-tai-jmeter-test.jpg)
 <br/><br/>
-5. Great news. Average response times stay below 50ms and the throughput is not impacted here, as most of the time is efficiently spent in the RPG program DB2 for i query execution, not in the IWS/TAI processing: 
+5. Great news!! Average response times stay below 50 ms and the throughput is not impacted here, as most of the time is efficiently spent in the RPG program and DB2 for i query execution, and not in the IWS/TAI processing! 
 <br/><br/>
 ![TAI and no TAI throughput  ](./images/iws-tai-jmeter-throughput.jpg)
 
