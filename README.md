@@ -159,12 +159,12 @@ Error 403: AuthorizationFailed
 Generate a jmeter script from the IWS-Generated OpenAPI swagger file:
 
 1.  First, download your API swagger file from the IWS GUI or the IFS:
-
+<br/><br/>
 ![IWS Swagger Download](./images/iws-swagger.jpg)
-
+<br/><br/>
 2. Install openapi-generator from the project web site https://openapi-generator.tech/docs/installation/
-and run the generator 
-
+and run the generator as shown below:
+<br/><br/>
 ```bash
 java -jar openapi-generator-cli-6.2.0.jar generate -i swagger.json  -g jmeter
 ```
@@ -176,11 +176,13 @@ java -jar openapi-generator-cli-6.2.0.jar generate -i swagger.json  -g jmeter
 [main] INFO  o.o.codegen.TemplateManager - writing file ./GetUserInfoAPIsApi.csv
 ```
 3. Repeat the same steps for other API's/Web Services and potentially use the "Merge" feature of JMeter to merge different jmx in one jmx. Customize the generated jmeter jmx script  (datapools, etc.) & run your tests. 
-
+<br/><br/>
 4. Here, we see that the HTTPS encryption and the Java Interceptor that validates a 3rd party certificate is quite transparent regarding the performance of this Web Service. 
+<br/><br/>
 ![jmeter test](./images/iws-tai-jmeter-test.jpg)
-
+<br/><br/>
 5. Great news. Average response times stay below 50ms and the throughput is not impacted here, as most of the time is efficiently spent in the RPG program DB2 for i query execution, not in the IWS/TAI processing: 
+<br/><br/>
 ![TAI and no TAI throughput  ](./images/iws-tai-jmeter-throughput.jpg)
 
 
