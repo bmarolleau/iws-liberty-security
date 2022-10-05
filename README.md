@@ -177,11 +177,11 @@ java -jar openapi-generator-cli-6.2.0.jar generate -i swagger.json  -g jmeter
 ```
 3. Repeat the same steps for other API's/Web Services and potentially use the "Merge" feature of JMeter to merge different jmx in one jmx. Customize the generated jmeter jmx script  (datapools, etc.) & run your tests. 
 <br/><br/>
-4. Here, we see that the HTTPS encryption and the Java Interceptor that validates a 3rd party certificate is quite transparent regarding the performance of this Web Service. 
+4. Here, we see that the HTTPS encryption and the Java Interceptor (TAI) processing that validates the 3rd party certificate is quite transparent. The performance of this Web Service remains quite similar with and without TAI.
 <br/><br/>
 ![jmeter test](./images/iws-tai-jmeter-test.jpg)
 <br/><br/>
-5. Great news!! Average response times stay below 50 ms and the throughput is not impacted here, as most of the time is efficiently spent in the RPG program and DB2 for i query execution, and not in the IWS/TAI processing! 
+5. Great news!! Average response times stay below 50 ms even with TAI+https with a throughput not impacted here. Indeed, most of the time is efficiently spent in the RPG ILE program and DB2 for i query execution, and not in the IWS/TAI processing! 
 <br/><br/>
 ![TAI and no TAI throughput  ](./images/iws-tai-jmeter-throughput.jpg)
 
