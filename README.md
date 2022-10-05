@@ -156,12 +156,15 @@ Error 403: AuthorizationFailed
 
 ## Performance test with JMeter
 
-Generate a jmeter script from the IWS-Generated OpenAPI swagger file.
-- Download your swagger file from the IWS GUI or the IFS
+Generate a jmeter script from the IWS-Generated OpenAPI swagger file:
+
+1.  First, download your API swagger file from the IWS GUI or the IFS:
+
 ![IWS Swagger Download](./images/iws-swagger.jpg)
 
-- Install openapi-generator from the project web site https://openapi-generator.tech/docs/installation/
+2. Install openapi-generator from the project web site https://openapi-generator.tech/docs/installation/
 and run the generator 
+
 ```bash
 java -jar openapi-generator-cli-6.2.0.jar generate -i swagger.json  -g jmeter
 ```
@@ -172,12 +175,12 @@ java -jar openapi-generator-cli-6.2.0.jar generate -i swagger.json  -g jmeter
 [main] INFO  o.o.codegen.TemplateManager - writing file ./GetUserInfoAPIsApi.jmx
 [main] INFO  o.o.codegen.TemplateManager - writing file ./GetUserInfoAPIsApi.csv
 ```
-- Repeat the same steps for other API's/Web Services and potentially use the "Merge" feature of JMeter to merge different jmx in one jmx. Customize the generated jmeter jmx script  (datapools, etc.) & run your tests. 
+3. Repeat the same steps for other API's/Web Services and potentially use the "Merge" feature of JMeter to merge different jmx in one jmx. Customize the generated jmeter jmx script  (datapools, etc.) & run your tests. 
 
-- Here, we see that the HTTPS encryption and the Java Interceptor that validates a 3rd party certificate is quite transparent regarding the performance of this Web Service. 
+4. Here, we see that the HTTPS encryption and the Java Interceptor that validates a 3rd party certificate is quite transparent regarding the performance of this Web Service. 
 ![jmeter test](./images/iws-tai-jmeter-test.jpg)
 
-- Average response times stays below 50ms and the throughput is not impacted here, as most of the time is efficiently spent in the RPG program DB2 for i query execution, not in the IWS/TAI processing: 
+5. Great news. Average response times stay below 50ms and the throughput is not impacted here, as most of the time is efficiently spent in the RPG program DB2 for i query execution, not in the IWS/TAI processing: 
 ![TAI and no TAI throughput  ](./images/iws-tai-jmeter-throughput.jpg)
 
 
