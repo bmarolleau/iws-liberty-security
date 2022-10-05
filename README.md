@@ -10,7 +10,7 @@ This sample Java class provides the following functions:
 
 ### How it works
 
-When the Liberty server is launched, it will read the jwtConsumer configuration named myJWTConsumer and make it available. The TAI class will also be initialized, but in this sample nothing is done during the TAI initialization process.
+When the Liberty server is launched, it reads the jwtConsumer configuration named myJWTConsumer and makes it available. The TAI class is then also be initialized, but in this sample nothing is done during the TAI initialization process.
 - **isTargetInterceptor** method: The TAI Class will only intercept HTTPS requests that contain a JWT in the Authorization Bearer header. isTargetInterceptor method returns 'true', negotiateValidateandEstablishTrust is then invoked.
 - **negotiateValidateandEstablishTrust**  method:  will create an instance of a JwtConsumer based on the myJWTConsumer configuration to validate and parse JWTs. Once selected to handle the authentication, it will validate the JWT signature with the trustedAlias certificate taken from myJWTConsumer and will parse the JWT to retrieve the claims. The JwtConsumer only verifies the issuer, audience and expiry claims; to validate the other claims some lines of code need to be written in the TAI negotiateValidateandEstablishTrust method. 
 - **Result:** If the JWT passes all the checks, the subject claim will be defined as the Principal identity and the request will be processed. Otherwise the request will be rejected.
@@ -153,3 +153,29 @@ Date: Tue, 12 Apr 2022 14:28:04 GMT
 
 Error 403: AuthorizationFailed
 ```
+
+## Performance test with JMeter
+
+Generate a jmeter script from the IWS-Generated OpenAPI swagger file.
+- Download your swagger from the IWS GUI or the IFS
+- Install openapi-generator from the project web site https://openapi-generator.tech/docs/installation/
+and run the generator 
+- Repeat the same steps for other API's/Web Services and potentially use the "Merge" feature of JMeter to merge different jmx in one jmx.  
+- Customize the generated jmeter jmx script  (datapools, etc.) & run your tests.
+
+```bash
+java -jar openapi-generator-cli-6.2.0.jar generate -i swagger.json  -g jmeter
+```
+```console
+[main] INFO  o.o.codegen.DefaultGenerator - Generating with dryRun=false
+[main] INFO  o.o.codegen.DefaultGenerator - OpenAPI Generator: jmeter (client)
+[main] INFO  o.o.codegen.DefaultGenerator - Generator 'jmeter' is considered stable.
+[main] INFO  o.o.codegen.TemplateManager - writing file ./GetUserInfoAPIsApi.jmx
+[main] INFO  o.o.codegen.TemplateManager - writing file ./GetUserInfoAPIsApi.csv
+```
+![jmeter test](./images/iws-tai-jmeter-test.jpg)
+![TAI and no TAI Comparison  ](./images/iws-TAI-jmeter.jpg)
+![TAI and no TAI throughput  ](./images/iws-tai-jmeter-throughput.jpg)
+
+
+
