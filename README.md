@@ -2,6 +2,8 @@
 ## Secure your Web Services on IBM i with IWS (Liberty) & Trust Authentication Interceptor (TAI)
 Link to the full presentation "[IWS, TAI, Ngninx](https://ibm.box.com/s/v2na4axu5hf48xvsy3jn6jrfd4bem1sv)" 
 
+A Trusted Authentication Interceptor can be plugged into your Integrated Web Services server so any  resource request is validated, thanks to a JWT token provided in the request header. TAI has to be activated on IWS, with proper roles & group of users configured. 
+Once active, any user with a JWT token (provided by a third party identity server) is identified and authorized to access a resource exposed by IWS. 
 This sample Java class provides the following functions:
 - JWT validation based on the JwtConsumer API (Liberty JWT feature) - the JWT signature will be checked, and the claims (exp, iss, aud) will be validated against the expected values;
 - Assign the identity by retrieving the subject claim;
